@@ -1,0 +1,177 @@
+{
+  "contractName": "AtomicSwap",
+  "abi": [
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.8+commit.23d335f2\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/Users/tobowers/code/atomicswap/contracts/AtomicSwap.sol\":\"AtomicSwap\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/Users/tobowers/code/atomicswap/contracts/AtomicSwap.sol\":{\"keccak256\":\"0x746db1f3293c7bab1842c76c53a7038faa2456714d5496fb09d80679f8994fa1\",\"urls\":[\"bzzr://d42ef9e2b904a8d08f2d01d788cee966073a10fffa3c7e41bfe0c81c08252891\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603580601d6000396000f3fe6080604052600080fdfea165627a7a72305820d9ec7eddbc6399ea1ef2ac1d5cd981cf21f0b2b807c34ec8bb3793db9459cb990029",
+  "deployedBytecode": "0x6080604052600080fdfea165627a7a72305820d9ec7eddbc6399ea1ef2ac1d5cd981cf21f0b2b807c34ec8bb3793db9459cb990029",
+  "sourceMap": "26:52:0:-;;;50:26;8:9:-1;5:2;;;30:1;27;20:12;5:2;50:26:0;26:52;;;;;;",
+  "deployedSourceMap": "26:52:0:-;;;;;",
+  "source": "pragma solidity ^0.5.0;\n\n\ncontract AtomicSwap {\n  constructor() public {\n  }\n}\n",
+  "sourcePath": "/Users/tobowers/code/atomicswap/contracts/AtomicSwap.sol",
+  "ast": {
+    "absolutePath": "/Users/tobowers/code/atomicswap/contracts/AtomicSwap.sol",
+    "exportedSymbols": {
+      "AtomicSwap": [
+        6
+      ]
+    },
+    "id": 7,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:0"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "AtomicSwap",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 4,
+              "nodeType": "Block",
+              "src": "71:5:0",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 5,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "61:2:0"
+            },
+            "returnParameters": {
+              "id": 3,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "71:0:0"
+            },
+            "scope": 6,
+            "src": "50:26:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "26:52:0"
+      }
+    ],
+    "src": "0:79:0"
+  },
+  "legacyAST": {
+    "absolutePath": "/Users/tobowers/code/atomicswap/contracts/AtomicSwap.sol",
+    "exportedSymbols": {
+      "AtomicSwap": [
+        6
+      ]
+    },
+    "id": 7,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 1,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:0"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6,
+        "linearizedBaseContracts": [
+          6
+        ],
+        "name": "AtomicSwap",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 4,
+              "nodeType": "Block",
+              "src": "71:5:0",
+              "statements": []
+            },
+            "documentation": null,
+            "id": 5,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 2,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "61:2:0"
+            },
+            "returnParameters": {
+              "id": 3,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "71:0:0"
+            },
+            "scope": 6,
+            "src": "50:26:0",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 7,
+        "src": "26:52:0"
+      }
+    ],
+    "src": "0:79:0"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.8+commit.23d335f2.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.16",
+  "updatedAt": "2020-02-11T10:52:46.974Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
