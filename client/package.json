@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "debug": "^4.1.1",
     "react": "16.11.0",
     "react-dom": "16.11.0",
     "react-scripts": "3.2.0",
+    "tupelo-wasm-sdk": "file:../../tupelo-wasm-sdk",
     "web3": "1.2.2"
   },
   "scripts": {
@@ -28,5 +30,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@microsoft/api-documenter": "^7.7.12"
   }
 }

@@ -15,7 +15,7 @@ contract("AtomicSwap", accounts => {
 
       const escrowAmount = new BN(10)
 
-      const secretBuffer = crypto.randomBytes(32);
+      const secretBuffer = Buffer.from("test"); //crypto.randomBytes(32);
       const secret = secretBuffer // to explore other options here
     
       const hashedSecret = abi.soliditySHA3(["bytes32"], [secret])

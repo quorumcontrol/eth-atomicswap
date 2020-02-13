@@ -1,14 +1,26 @@
 import React, { Component } from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import AtomicSwapContract from "./contracts/AtomicSwap.json";
 import getWeb3 from "./getWeb3";
-
+import {Community, Tupelo, EcdsaKey, defaultNotaryGroup, p2p, ChainTree} from 'tupelo-wasm-sdk'
+import debug from 'debug';
 import "./App.css";
+import abi from 'ethereumjs-abi'
+
+const log = debug("atomicswap:main")
+
+window.Tupelo = Tupelo
+window.Community = Community
+window.defaultNotaryGroup = defaultNotaryGroup
+window.p2p = p2p
+window.sdk = require('tupelo-wasm-sdk')
 
 class App extends Component {
-  state = { storageValue: 0, web3: null, accounts: null, contract: null };
+  state = { storageValue: 0, web3: null, accounts: null, contract: null, community:null };
 
   componentDidMount = async () => {
     try {
+
+      const communityPromise = Community.getDefault()
       // Get network provider and web3 instance.
       const web3 = await getWeb3();
 
@@ -17,15 +29,18 @@ class App extends Component {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = SimpleStorageContract.networks[networkId];
+      const deployedNetwork = AtomicSwapContract.networks[networkId];
       const instance = new web3.eth.Contract(
-        SimpleStorageContract.abi,
+        AtomicSwapContract.abi,
         deployedNetwork && deployedNetwork.address,
       );
 
+      let c = await communityPromise
+
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
-      this.setState({ web3, accounts, contract: instance }, this.runExample);
+      this.setState({ web3, accounts, contract: instance, community: c }, this.exampleSetup);
+      // this.setState({ web3, accounts, contract: instance });
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -35,17 +50,47 @@ class App extends Component {
     }
   };
 
-  runExample = async () => {
-    const { accounts, contract } = this.state;
+  exampleSetup = async () => {
+    try {
+      const { web3, accounts, contract } = this.state;
 
-    // Stores a given value, 5 by default.
-    await contract.methods.set(5).send({ from: accounts[0] });
+      const tupeloAliceKey = await EcdsaKey.generate()
+      console.log("insecure, just generated private key for alice: ", Buffer.from(tupeloAliceKey.privateKey).toString('hex'))
+      const addr = await tupeloAliceKey.address()
+      log("key created")    
+      const tree = await ChainTree.newEmptyTree(this.state.community.blockservice, tupeloAliceKey)
+      log("tree created")
+  
+      const secret = Buffer.from('secret')
+  
+      const tupeloHash = await Tupelo.hash(secret)
+      
+      // tupelo parts - 
+      const ownership = new Ownership()
+      ownership.setPublicKey(accounts[0].toString())
+      ownership.setConditions('(== (hashed-preimage) "' + "0x" + Buffer.from(tupeloHash).toString('hex') +'")')
+      
+      const newAddr = await Tupelo.ownershipToAddress(ownership)
 
-    // Get the value from the contract to prove it worked.
-    const response = await contract.methods.get().call();
-
-    // Update state with the result.
-    this.setState({ storageValue: response });
+      // 
+  
+      const ethHash = abi.soliditySHA3(["bytes32"], [secret])
+  
+  
+      let resp = await contract.methods.initiate(7200, ethHash, addr).send({from: accounts[0], value: 1000000000})
+      console.log("resp: ", resp)
+      // // Stores a given value, 5 by default.
+      // await contract.methods.set(5).send({ from: accounts[0] });
+  
+      // // Get the value from the contract to prove it worked.
+      // const response = await contract.methods.get().call();
+  
+      // // Update state with the result.
+      // this.setState({ storageValue: response });
+    } catch(e) {
+      console.error(e)
+    }
+   
   };
 
   render() {
@@ -55,19 +100,11 @@ class App extends Component {
     return (
       <div className="App">
         <h1>Good to Go!</h1>
-        <p>Your Truffle Box is installed and ready.</p>
-        <h2>Smart Contract Example</h2>
-        <p>
-          If your contracts compiled and migrated successfully, below will show
-          a stored value of 5 (by default).
-        </p>
-        <p>
-          Try changing the value stored on <strong>line 40</strong> of App.js.
-        </p>
-        <div>The stored value is: {this.state.storageValue}</div>
+        
       </div>
     );
   }
 }
 
 export default App;
+
