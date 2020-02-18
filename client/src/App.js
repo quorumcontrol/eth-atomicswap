@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import AtomicSwapContract from "./contracts/AtomicSwap.json";
 import getWeb3 from "./getWeb3";
-import {Community, Tupelo, EcdsaKey, defaultNotaryGroup, p2p, ChainTree} from 'tupelo-wasm-sdk'
+import {Community, Tupelo, EcdsaKey, defaultNotaryGroup, p2p, ChainTree, setOwnershipTransaction} from 'tupelo-wasm-sdk'
 import debug from 'debug';
 import "./App.css";
 import abi from 'ethereumjs-abi'
+import {Ownership, PublicKey} from 'tupelo-messages/signatures/signatures_pb'
+// import EthTx from 'ethereumjs-tx'
 
 const log = debug("atomicswap:main")
 
@@ -52,41 +54,82 @@ class App extends Component {
 
   exampleSetup = async () => {
     try {
-      const { web3, accounts, contract } = this.state;
+      const { web3, accounts, contract, community } = this.state;
+
+      const secret = Buffer.from('secret12')
 
       const tupeloAliceKey = await EcdsaKey.generate()
-      console.log("insecure, just generated private key for alice: ", Buffer.from(tupeloAliceKey.privateKey).toString('hex'))
-      const addr = await tupeloAliceKey.address()
+      // bob creates a new tupelo key
+      const tupeloBobKey = await EcdsaKey.generate()
       log("key created")    
+
+      const aliceEthAccount = web3.eth.accounts.privateKeyToAccount(Buffer.from(tupeloAliceKey.privateKey).toString('hex'))
+      console.log('after eth account')
+
+      const addr = await tupeloAliceKey.address()      
+
+      // alice has a valuable chaintree
+      // bob's got eth      
+
+
+      // in the example we're creating a new tree, but it would probabl
+      // pre-exist
       const tree = await ChainTree.newEmptyTree(this.state.community.blockservice, tupeloAliceKey)
       log("tree created")
   
-      const secret = Buffer.from('secret')
   
       const tupeloHash = await Tupelo.hash(secret)
       
-      // tupelo parts - 
+      // alice escrows her chaintree
       const ownership = new Ownership()
-      ownership.setPublicKey(accounts[0].toString())
+      console.log("tupelo bob key: ", tupeloBobKey.publicKey)
+      const pubKey = new PublicKey()
+      pubKey.setPublicKey(tupeloBobKey.publicKey)
+      pubKey.setType(PublicKey.Type.KEYTYPESECP256K1)
+      ownership.setPublicKey(pubKey)
       ownership.setConditions('(== (hashed-preimage) "' + "0x" + Buffer.from(tupeloHash).toString('hex') +'")')
       
       const newAddr = await Tupelo.ownershipToAddress(ownership)
 
-      // 
+      await community.playTransactions(tree, [setOwnershipTransaction([newAddr])])
+
+      log("alice's chaintree is escrowed!")
+      // alice sends bob the conditions
+      
+      // bob checks on the chaintree to make sure that it's escrowed
+      // then escrows 10 eth into the smart contract
   
       const ethHash = abi.soliditySHA3(["bytes32"], [secret])
   
-  
-      let resp = await contract.methods.initiate(7200, ethHash, addr).send({from: accounts[0], value: 1000000000})
-      console.log("resp: ", resp)
-      // // Stores a given value, 5 by default.
-      // await contract.methods.set(5).send({ from: accounts[0] });
-  
-      // // Get the value from the contract to prove it worked.
-      // const response = await contract.methods.get().call();
-  
-      // // Update state with the result.
-      // this.setState({ storageValue: response });
+      let resp = await contract.methods.initiate(7200, ethHash, addr).send({from: accounts[0], value: web3.utils.toWei("0.5", "ether")})
+      console.log("resp: ", resp)     
+      // now bob has escrowed his eth to the hash as well.
+      // he'll listen for the redeem:
+      contract.once('Redeemed', (err,evt)=> {
+        console.log('err: ', err, ' evt: ', evt)
+      })
+
+      // in this example bob's gonna give alice a little eth for her transaction, this wouldn't happen in real life.
+      const bobToAliceResp = await web3.eth.sendTransaction({
+        from: accounts[0],
+        to: aliceEthAccount.address,
+        value: web3.utils.toWei("0.1", "ether"),
+      })
+      console.log(bobToAliceResp)
+      // now alice claims the eth
+
+      let redeemData = contract.methods.redeem.getData(secret, ethHash)
+      
+      let rawTransaction = web3.accounts.signTransaction({
+        from: aliceEthAccount.address,
+        data: redeemData,
+      }, tupeloAliceKey.privateKey)
+
+
+      let redeemResp = await web3.eth.sendRawTransaction(rawTransaction.raw)
+      console.log('redeemResp: ', redeemResp)
+      // and bob now knows the secret, so he can claim the chaintree
+
     } catch(e) {
       console.error(e)
     }

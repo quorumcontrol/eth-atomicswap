@@ -18,7 +18,7 @@ contract AtomicSwap {
     mapping(bytes32 => Swap) public swaps;
 
     event Refunded(uint256 _refundTime);
-    event Redeemed(uint256 _redeemTime);
+    event Redeemed(uint256 _redeemTime, bytes32 _secret);
 
     event LogSecrets(bytes32 _hashedSecret, bytes32 secret, bytes32 calculatedSecret);
 
@@ -101,7 +101,7 @@ contract AtomicSwap {
         swaps[_hashedSecret].participant.transfer(swaps[_hashedSecret].value);
 
         swaps[_hashedSecret].emptied = true;
-        emit Redeemed(block.timestamp);
+        emit Redeemed(block.timestamp, _secret);
         // swaps[_hashedSecret].secret = _secret;
     }
 
